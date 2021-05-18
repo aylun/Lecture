@@ -1,0 +1,70 @@
+---
+title: "Factor"
+author: "Yilun"
+date: "4/20/2021"
+output:
+   html_document:
+    #variant: markdown_github
+    toc: true
+    number_sections: false
+    self_contained: no
+    toc_depth: 2
+    toc_float: true
+    fig_caption: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+### Introduction
+
+The term factor refers to a statistical data type used to store categorical variables. The difference between a categorical variable and a continuous variable is that a categorical variable can belong to a **limited number of categories**. A continuous variable, on the other hand, can correspond to an **infinite number of values**.
+
+It is important that R knows whether it is dealing with a continuous or a categorical variable, as the statistical models you will develop in the future treat both types differently. (You will see later why this is the case.)
+
+A good example of a categorical variable is sex. In many circumstances you can limit the sex categories to "Male" or "Female". (Sometimes you may need different categories. For example, you may need to consider chromosomal variation, hermaphroditic animals, or different cultural norms, but you will always have a finite number of categories.)
+
+There are two types of categorical variables: a **nominal categorical variable** and an **ordinal categorical variable**.
+
+A nominal variable is a categorical variable without an implied order. This means that it is impossible to say that 'one is worth more than the other'. For example, think of the categorical variable `animals_vector` with the categories `"Elephant"`, `"Giraffe"`, `"Donkey"` and `"Horse"`. Here, it is impossible to say that one stands above or below the other.
+```{r}
+# Animals
+animals_vector <- c("Elephant", "Giraffe", "Donkey", "Horse")
+factor_animals_vector <- factor(animals_vector)
+factor_animals_vector
+```
+
+In contrast, ordinal variables do have a natural ordering. Consider for example the categorical variable `temperature_vector` with the categories: `"Low"`, `"Medium"` and `"High"`. Here it is obvious that `"Medium"` stands above `"Low"`, and `"High"` stands above `"Medium"`.
+```{r}
+# Temperature
+temperature_vector <- c("High", "Low", "High","Low", "Medium")
+factor_temperature_vector <- factor(temperature_vector, order = TRUE, levels = c("Low", "Medium", "High"))
+factor_temperature_vector
+```
+
+Use `summary()` to get a quick overview of the contents
+```{r}
+summary(factor_animals_vector)
+summary(factor_temperature_vector)
+```
+
+### Syntax
+
+`factor(x = character(), levels, labels = levels,exclude = NA, ordered = is.ordered(x), nmax = NA)`
+
+`x`: a vector of data, usually taking a small number of distinct values.
+
+`levels`: an optional vector of the unique values (as character strings) that `x` might have taken. The default is the unique set of values taken by `as.character(x)` sorted into increasing order of `x`. Note that this set can be specified as smaller than `sort(unique(x))`.
+
+`labels`: either an optional character vector of labels for the `levels` (in the same order as `levels` after removing those in `exclude`), or a character string of length 1. Duplicated values in `labels` can be used to map different values of `x` to the same factor level.
+
+`exclude`: a vector of values to be excluded when forming the set of levels. This may be factor with the same level set as x or should be a character.
+
+`ordered`: logical flag to determine if the levels should be regarded as ordered (in the order given).
+
+`nmax`: an upper bound on the number of levels
+
+
+
+
+

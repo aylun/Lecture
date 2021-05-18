@@ -1,0 +1,69 @@
+---
+title: "Data Frame"
+author: "Yilun"
+date: "4/20/2021"
+output:
+   html_document:
+    #variant: markdown_github
+    toc: true
+    number_sections: false
+    self_contained: no
+    toc_depth: 2
+    toc_float: true
+    fig_caption: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Data frames are Data Sets with different data types. 
+
+### Methods
+
+Create a Data Frame: 
+
+```{r}
+# Definition of vectors
+name <- c("Mercury", "Venus", "Earth", 
+          "Mars", "Jupiter", "Saturn", 
+          "Uranus", "Neptune")
+type <- c("Terrestrial planet", 
+          "Terrestrial planet", 
+          "Terrestrial planet", 
+          "Terrestrial planet", "Gas giant", 
+          "Gas giant", "Gas giant", "Gas giant")
+diameter <- c(0.382, 0.949, 1, 0.532, 
+              11.209, 9.449, 4.007, 3.883)
+rotation <- c(58.64, -243.02, 1, 1.03, 
+              0.41, 0.43, -0.72, 0.67)
+rings <- c(FALSE, FALSE, FALSE, FALSE, TRUE, TRUE, TRUE, TRUE)
+
+# Create a data frame from the vectors
+planets_df <- data.frame(name,type,diameter,rotation,rings)
+
+str(planets_df)
+```
+***
+Sorting Data
+
+`order()` is a function that gives you the ranked position of each element when it is applied on a variable. This can be used to sort the data frame by a given column 
+
+```{r}
+planets_df[order(planets_df$diameter),]
+```
+
+`head()` or `tail()`: Quick Look into the dataset
+
+`str()`: Overview of Data frame structure
+
+  * The total number of observations
+  
+  * The total number of variables
+  
+  * A full list of the variables names 
+  
+  * The data type of each variable 
+  
+  * The first observations
+  
