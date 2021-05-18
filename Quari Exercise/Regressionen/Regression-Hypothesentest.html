@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Yilun" />
+
+
+<title>Regressionen</title>
+
+<script src="Regression-Hypothesentest_files/header-attrs-2.7/header-attrs.js"></script>
+<script src="Regression-Hypothesentest_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="Regression-Hypothesentest_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="Regression-Hypothesentest_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="Regression-Hypothesentest_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="Regression-Hypothesentest_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="Regression-Hypothesentest_files/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="Regression-Hypothesentest_files/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="Regression-Hypothesentest_files/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="Regression-Hypothesentest_files/navigation-1.1/tabsets.js"></script>
+<link href="Regression-Hypothesentest_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="Regression-Hypothesentest_files/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-sm-12 col-md-4 col-lg-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-sm-12 col-md-8 col-lg-9">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Regressionen</h1>
+<h4 class="author">Yilun</h4>
+<h4 class="date">5/18/2021</h4>
+
+</div>
+
+
+<div id="regression" class="section level2">
+<h2>Regression</h2>
+<div id="loading-and-inspectindg-data" class="section level3">
+<h3>1 Loading and inspectindg Data</h3>
+<pre class="r"><code>data(hprice1)
+glimpse(hprice1)</code></pre>
+<pre><code>## Rows: 88
+## Columns: 10
+## $ price    &lt;dbl&gt; 300.000, 370.000, 191.000, 195.000, 373.000, 466.275, 332.500…
+## $ assess   &lt;dbl&gt; 349.1, 351.5, 217.7, 231.8, 319.1, 414.5, 367.8, 300.2, 236.1…
+## $ bdrms    &lt;int&gt; 4, 3, 3, 3, 4, 5, 3, 3, 3, 3, 4, 5, 3, 3, 3, 4, 4, 3, 3, 4, 3…
+## $ lotsize  &lt;dbl&gt; 6126, 9903, 5200, 4600, 6095, 8566, 9000, 6210, 6000, 2892, 6…
+## $ sqrft    &lt;int&gt; 2438, 2076, 1374, 1448, 2514, 2754, 2067, 1731, 1767, 1890, 2…
+## $ colonial &lt;int&gt; 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1…
+## $ lprice   &lt;dbl&gt; 5.703783, 5.913503, 5.252274, 5.273000, 5.921578, 6.144775, 5…
+## $ lassess  &lt;dbl&gt; 5.855359, 5.862210, 5.383118, 5.445875, 5.765504, 6.027073, 5…
+## $ llotsize &lt;dbl&gt; 8.720297, 9.200593, 8.556414, 8.433811, 8.715224, 9.055556, 9…
+## $ lsqrft   &lt;dbl&gt; 7.798934, 7.638198, 7.225482, 7.277938, 7.829630, 7.920810, 7…</code></pre>
+</div>
+<div id="a-first-regression" class="section level3">
+<h3>2 A first regression</h3>
+<pre class="r"><code>my.lm1 = lm(price~ sqrft, data = hprice1)
+summary(my.lm1)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = price ~ sqrft, data = hprice1)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -117.112  -36.348   -6.503   31.701  235.253 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) 11.20415   24.74261   0.453    0.652    
+## sqrft        0.14021    0.01182  11.866   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 63.62 on 86 degrees of freedom
+## Multiple R-squared:  0.6208, Adjusted R-squared:  0.6164 
+## F-statistic: 140.8 on 1 and 86 DF,  p-value: &lt; 2.2e-16</code></pre>
+<div id="using-prdict-for-predictions" class="section level4">
+<h4>2.1 Using prdict for predictions</h4>
+<pre class="r"><code>my.price.hat = predict(my.lm1)
+head(my.price.hat)</code></pre>
+<pre><code>##        1        2        3        4        5        6 
+## 353.0385 302.2821 203.8540 214.2296 363.6945 397.3452</code></pre>
+</div>
+</div>
+<div id="random-data-subsets" class="section level3">
+<h3>3 Random data Subsets</h3>
+<p>A simple way of obtaining a random sample is the following:</p>
+<p>• First, reorder rows randomly</p>
+<p>• Second, take (for example) the ﬁrst 80 percent of the rows</p>
+<pre class="r"><code>my.random.index &lt;- sample(nrow(hprice1), replace = FALSE)
+head(my.random.index)</code></pre>
+<pre><code>## [1] 64 66 49 37 62  4</code></pre>
+</div>
+<div id="tasks" class="section level3">
+<h3>4 Tasks</h3>
+<ol style="list-style-type: decimal">
+<li>Write a function my.RSS with two inputs: a string describing the formula and the dataset. The function carries out the regression and returns the RSS (residual sum of squares)</li>
+</ol>
+<pre class="r"><code>my.RSS = function(my.str, my.data){
+  sum(lm(my.str,data = my.data)$residuals^2)
+}
+
+#Testing
+my.RSS(my.str = &quot;price~sqrft&quot;, my.data = hprice1)</code></pre>
+<pre><code>## [1] 348053.4</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>Write a function that has two input arguments: a data and a number for the split (e.g. 0.8 for 80 percent). The function returns randomly selected training and test datasets</li>
+</ol>
+<pre class="r"><code>my.datasets = function(my.data, split){
+  
+}</code></pre>
+</div>
+</div>
+<div id="hypothesentest" class="section level2">
+<h2>Hypothesentest</h2>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
