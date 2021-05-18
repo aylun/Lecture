@@ -1,0 +1,152 @@
+---
+title: "Regressionen"
+author: "Yilun"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: 
+   html_document:
+    #variant: markdown_github
+    toc: true
+    number_sections: false
+    self_contained: no
+    toc_depth: 4
+    toc_float: true
+    fig_caption: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(dplyr)
+library(wooldridge)
+library(ggplot2)
+```
+
+## Regression
+
+### 1 Loading and inspectindg Data
+
+```{r}
+data(hprice1)
+glimpse(hprice1)
+```
+
+### 2 A first regression 
+
+```{r}
+my.lm1 = lm(price~ sqrft, data = hprice1)
+summary(my.lm1)
+```
+
+
+#### 2.1 Using predict for predictions 
+
+```{r}
+my.price.hat = predict(my.lm1)
+head(my.price.hat)
+
+```
+
+### 3 Random data Subsets
+
+A simple way of obtaining a random sample is the following:
+
+• First, reorder rows randomly
+
+• Second, take (for example) the ﬁrst 80 percent of the rows
+
+```{r}
+my.random.index <- sample(nrow(hprice1), replace = FALSE)
+head(my.random.index)
+```
+
+### 4 Tasks
+
+#### 4.1 my.RSS
+Write a function my.RSS with two inputs: a string describing the formula and the dataset. The function carries out the regression and returns the RSS (residual sum of squares)
+
+```{r}
+my.RSS = function(my.str, my.data){
+  sum(lm(my.str,data = my.data)$residuals^2)
+}
+
+#Testing
+my.RSS(my.str = "price~sqrft", my.data = hprice1)
+```
+
+#### 4.2 my.data.select
+Write a function that has two input arguments: a data and a number for the split (e.g. 0.8 for 80 percent). The function returns randomly selected training and test datasets
+
+```{r}
+my.data.select = function(my.data, split){
+  nrow.train = round(nrow(my.data)*split,0)
+  nrow.test = nrow(my.data)-nrow.train
+  return(
+    list(
+      traindata = my.data[sample(nrow(my.data),nrow.train, replace = FALSE),],
+      testdata = sample_n(my.data,nrow.test)
+    )
+  )
+}
+```
+
+```{r}
+# Testing 1
+my.datasets = my.data.select(my.data = hprice1, split=0.8)
+glimpse(my.datasets)
+
+```
+
+```{r}
+# Testing 2
+my.datasets <- my.data.select(my.data = hprice1, split=0.8)
+glimpse(my.datasets)
+
+my.formula <- as.formula("price ~ sqrft") 
+my.lm2 <- lm(my.formula, data=my.datasets$traindata)
+summary(my.lm2)
+
+predict.test <- predict(my.lm2, newdata = my.datasets$testdata)
+head(predict.test)
+
+```
+
+#### 4.3 my.RSSTrainTest
+Write a function that accepts a formula, a dataset and split as an input. It creates the training and test datasets, and runs the regression using the training dataset. Finally, it calculates the RSS for the training dataset and the test dataset.
+
+
+```{r}
+my.RSS.calculator = function(input.lm, x, y) {
+  sum(((input.lm$coefficients[1]+input.lm$coefficients[2]*x)-y)^2)
+}
+#Testing
+my.RSS.calculator(input.lm = lm("price~sqrft", data = hprice1),x = hprice1$sqrft,y=hprice1$price)
+
+```
+```{r}
+my.RSSTrainTest = function(formula,my.data,split){
+  # create Datasets
+  fn.dataset = my.data.select(my.data = my.data, split = split)
+  ## subsetting 
+  train.dataset = fn.dataset$traindata
+  test.dataset = fn.dataset$testdata
+  
+  # get Model using traindata
+  fn.lm = lm(formula, data = fn.dataset$traindata)
+  
+  # Use Make to make predictions
+  train.dataset$prediction = predict(fn.lm)
+  test.dataset$prediction = predict(fn.lm,newdata = test.dataset)
+  
+  # compute RSS
+  list(
+    rssTrain = my.RSS.calculator(input.lm = fn.lm,x = train.dataset$sqrft, y = train.dataset$price),
+    rssTest = my.RSS.calculator(input.lm = fn.lm,x = test.dataset$sqrft, y = test.dataset$price)
+  )
+
+}
+
+#Testing 
+my.RSSTrainTest("price ~ sqrft", my.data=hprice1, split=0.8)
+
+```
+

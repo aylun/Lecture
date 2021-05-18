@@ -1,0 +1,98 @@
+---
+title: "HW_ProbDistribution"
+author: "Yilun"
+date: "4/27/2021"
+output:
+   html_document:
+    #variant: markdown_github
+    toc: true
+    number_sections: false
+    self_contained: no
+    toc_depth: 3
+    toc_float: true
+    fig_caption: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Distributions in R
+
+Every distribution that R handles has four functions. There is a root name, for e.g. the root name for the normal distribution is norm. This root is prefixed by one of following letters:
+
+* p for probability, the cumulative distribution function 
+* q for quantile, the inverse cumulative distribution function 
+* d for density, the density function or probability function
+* r for random, a random variable having the specified distribution
+
+### Distribution functions for normal distribution
+
+* `dnorm(x, mean = 0, sd = 1, log = FALSE)`
+* `pnorm(q, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)`
+* `qnorm(p, mean = 0, sd = 1, lower.tail = TRUE, log.p = FALSE)`
+* `rnorm(n, mean = 0, sd = 1)`
+
+## Excercise
+
+### 1. Difference of Two Random Variable
+
+Let X~N(mean = 3, sd =1 )
+
+Let Y~N(mean = 2, sd = 2)
+
+X and Y are statiscally independent
+
+Task 1: What is P(X>Y)? Hint: Define Z = X-Y
+```{r}
+meanX = 3
+meanY = 2
+varX = 1
+varY = 2
+#Get distribution of Z=X-Y
+meanZ= meanX-meanY
+varZ = varX^2+varY^2
+
+# For P(X>Y), Z > 0
+# Calculate P(X>Y)
+1-pnorm(0,mean = meanZ,sd = sqrt(varZ))
+```
+
+Task 2: Implement code that solves the task, i.e. create a function `my.simulation(n.reps, mu.x, mu.y, sigma.x, sigma.y)` where `n.reps` governs the number of repetitions / the precision of the simulation.
+```{r}
+my.simulation = function(n.reps, mu.x, mu.y, sigma.x, sigma.y){
+  simDifference= rnorm(n.reps, mean=mu.x, sd=sigma.x)-rnorm(n.reps, mean=mu.y, sd=sigma.y)
+  relevant = which(simDifference>0)
+  probability = length(relevant)/n.reps
+  return(probability)
+  
+}
+
+my.simulation(100,3,2,1,2)
+my.simulation(1000,3,2,1,2)
+my.simulation(1000000,3,2,1,2)
+```
+
+### 2. Prob Calculator
+Write a function that calculates P (x 1 ≤ X ≤ x 2 ) where X follows a normal distribution with parameters μ (mean) , σ (var).  The function input is a matrix with four columns. The first column refers to x1 , the second to x2 , the third to μ , the fourth to σ.  Each row can contain different values.  The output of the function is a vector having the same length as there are rows in the matrix.
+
+```{r}
+# Input Matrix:
+my.matrix = matrix(nrow=2, ncol=4)
+my.matrix[1,] = c(-1, 1, 0, 1)
+my.matrix[2,] = c(-1, 2, 0, 1) 
+colnames(my.matrix) <- c("x1", "x2", "mean", "sigma") 
+my.matrix
+```
+```{r}
+my.prob.calc = function(inputMatrix){
+  x1.prob = pnorm(inputMatrix[,1], mean = inputMatrix[,3], sd=inputMatrix[,4])
+  x2.prob = pnorm(inputMatrix[,2], mean = inputMatrix[,3], sd=inputMatrix[,4])
+  result = x2.prob - x1.prob
+  return(result)
+}
+
+#Checking
+my.prob.calc(my.matrix)
+```
+

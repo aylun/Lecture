@@ -1,0 +1,36 @@
+---
+title: "NYT COVID Data"
+author: "Yilun"
+date: "4/29/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+The data is loaded from github
+```{r}
+nyt_st_url <- "https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv"
+nyt_st <- read.csv(nyt_st_url, stringsAsFactors = FALSE)
+```
+
+Boxplot for Death per State
+```{r}
+deathPerState = boxplot(deaths ~ state, data = nyt_st, horizontal = TRUE, las = 2)
+```
+
+Plotting with Log 
+```{r}
+states <- nyt_st %>%
+  filter(state %in% c("New York","Florida","Washington"),diff(c(0, deaths)) >= 3)%>%
+  arrange(date)
+
+
+plot(subset(states, state == "New York")$deaths, log ="y",type = "l", ylab = "deaths",xlab = "Days since 3 deaths first recorded", lwd = 2, col = "darkgreen", main = "Cumulative Deaths due to Covid ")
+lines(subset(states, state == "Washington")$deaths,lwd = 2, col = "blue")
+lines(subset(states, state == "Florida")$deaths,lwd = 2, col = "red")
+
+```
+

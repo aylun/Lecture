@@ -1,0 +1,59 @@
+---
+title: "Interchange Letters"
+author: "Yilun"
+date: "5/11/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+```
+
+
+### Step 1 
+Write a function that randomly interchanges all the letters of a word.
+```{r}
+interchange.word = function(inputString){
+  WordVect = unlist(strsplit(inputString,split = ""))
+    paste(WordVect[sample(1:nchar(inputString))],collapse = "")
+}
+interchange.word("of")
+```
+
+### Step 2
+Now write a function that exchanges only the characters of the middle of the word (between ﬁrst and last character) Use your function from step 1. The function should not change anything, if the word is composed of less than 4 characters.  
+The function has an argument called `exclude` which is vector of potential punctuation marks at the end of a word. You can assume that there is only one possible punctuation mark. If there is such a mark, it should not be changed and not counted towards the number of characters the actual word is composed of. Hence, `Tes.` is a three-character word and therefore nothing will be changed. Use the following vector of punctuation marks: `exclude=c(",",".","!","?")`.
+
+```{r}
+interchange.middle.of.word = function(string,exclude=c(",",".","!","?")){
+  #  Regular Expression for gsub
+  ExcludeRegEx = paste(c("[",exclude,"]","$"),collapse = "")
+  # Remove excluded chars
+  CharOnly = gsub(ExcludeRegEx,"",string)
+  #Generate Vector
+  CharOnly.Vec = unlist(strsplit(CharOnly,split = ""))
+
+  if (nchar(CharOnly) < 4)
+  return(string)
+  else 
+    paste(
+      c(
+        CharOnly.Vec[1],
+        interchange.word(
+          substr(
+            CharOnly,2,
+            length(CharOnly.Vec)-1
+          )
+        ),
+        substring(string,length(CharOnly.Vec))
+      ),
+    collapse = "")
+
+}
+interchange.middle.of.word("H123456o!")
+interchange.middle.of.word("Test")
+interchange.middle.of.word("Yes?")
+interchange.middle.of.word("Tes")
+```
+
