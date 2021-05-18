@@ -11,6 +11,7 @@
 
 <meta name="author" content="Yilun" />
 
+<meta name="date" content="2021-05-18" />
 
 <title>Regressionen</title>
 
@@ -242,7 +243,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Regressionen</h1>
 <h4 class="author">Yilun</h4>
-<h4 class="date">5/18/2021</h4>
+<h4 class="date">18 May 2021</h4>
 
 </div>
 
@@ -269,7 +270,12 @@ glimpse(hprice1)</code></pre>
 <div id="a-first-regression" class="section level3">
 <h3>2 A first regression</h3>
 <pre class="r"><code>my.lm1 = lm(price~ sqrft, data = hprice1)
-summary(my.lm1)</code></pre>
+ggplot(hprice1,aes(sqrft, price))+
+  geom_point()+
+  stat_smooth(method = &quot;lm&quot;,col = &quot;red&quot;)</code></pre>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="Regression-Hypothesentest_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<pre class="r"><code>summary(my.lm1)</code></pre>
 <pre><code>## 
 ## Call:
 ## lm(formula = price ~ sqrft, data = hprice1)
@@ -303,7 +309,7 @@ head(my.price.hat)</code></pre>
 <p>• Second, take (for example) the ﬁrst 80 percent of the rows</p>
 <pre class="r"><code>my.random.index &lt;- sample(nrow(hprice1), replace = FALSE)
 head(my.random.index)</code></pre>
-<pre><code>## [1] 64 66 49 37 62  4</code></pre>
+<pre><code>## [1]  6 44 32 19 26 50</code></pre>
 </div>
 <div id="tasks" class="section level3">
 <h3>4 Tasks</h3>
@@ -320,9 +326,45 @@ my.RSS(my.str = &quot;price~sqrft&quot;, my.data = hprice1)</code></pre>
 <ol start="2" style="list-style-type: decimal">
 <li>Write a function that has two input arguments: a data and a number for the split (e.g. 0.8 for 80 percent). The function returns randomly selected training and test datasets</li>
 </ol>
-<pre class="r"><code>my.datasets = function(my.data, split){
-  
-}</code></pre>
+<pre class="r"><code>my.data.select = function(my.data, split){
+  nrow.train = round(nrow(my.data)*split,0)
+  nrow.test = nrow(my.data)-nrow.train
+  return(
+    list(
+      traindata = my.data[sample(nrow(my.data),nrow.train, replace = FALSE),],
+      testdata = sample_n(my.data,nrow.test)
+    )
+  )
+}
+
+# Testing 1
+my.datasets = my.data.select(my.data = hprice1, split=0.8)
+glimpse(my.datasets)</code></pre>
+<pre><code>## List of 2
+##  $ traindata:&#39;data.frame&#39;:   70 obs. of  10 variables:
+##   ..$ price   : num [1:70] 280 266 285 330 235 ...
+##   ..$ assess  : num [1:70] 336 286 306 360 252 ...
+##   ..$ bdrms   : int [1:70] 4 4 3 3 4 4 4 4 2 3 ...
+##   ..$ lotsize : num [1:70] 8460 5484 7123 8178 6383 ...
+##   ..$ sqrft   : int [1:70] 1915 1664 1774 2186 1840 2709 1656 2090 1185 1715 ...
+##   ..$ colonial: int [1:70] 1 1 1 1 1 0 1 1 0 0 ...
+##   ..$ lprice  : num [1:70] 5.63 5.58 5.65 5.8 5.46 ...
+##   ..$ lassess : num [1:70] 5.82 5.66 5.72 5.88 5.53 ...
+##   ..$ llotsize: num [1:70] 9.04 8.61 8.87 9.01 8.76 ...
+##   ..$ lsqrft  : num [1:70] 7.56 7.42 7.48 7.69 7.52 ...
+##   ..- attr(*, &quot;time.stamp&quot;)= chr &quot;25 Jun 2011 23:03&quot;
+##  $ testdata :&#39;data.frame&#39;:   18 obs. of  10 variables:
+##   ..$ price   : num [1:18] 195 248 210 206 258 ...
+##   ..$ assess  : num [1:18] 232 273 199 236 287 ...
+##   ..$ bdrms   : int [1:18] 3 4 3 3 4 3 2 4 3 6 ...
+##   ..$ lotsize : num [1:18] 4600 7050 5146 6000 6525 ...
+##   ..$ sqrft   : int [1:18] 1448 1656 1408 1767 1850 1837 1421 1760 1630 1386 ...
+##   ..$ colonial: int [1:18] 1 1 1 0 1 1 0 1 1 1 ...
+##   ..$ lprice  : num [1:18] 5.27 5.51 5.35 5.33 5.55 ...
+##   ..$ lassess : num [1:18] 5.45 5.61 5.29 5.46 5.66 ...
+##   ..$ llotsize: num [1:18] 8.43 8.86 8.55 8.7 8.78 ...
+##   ..$ lsqrft  : num [1:18] 7.28 7.41 7.25 7.48 7.52 ...
+##   ..- attr(*, &quot;time.stamp&quot;)= chr &quot;25 Jun 2011 23:03&quot;</code></pre>
 </div>
 </div>
 <div id="hypothesentest" class="section level2">
