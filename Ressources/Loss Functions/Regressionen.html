@@ -256,7 +256,11 @@ summary(LSfit)</code></pre>
 <li>Verify that the sum of the residuals is zero</li>
 <li>Verify the <strong>Least Squares Property</strong> of the regression line.</li>
 </ul>
-<pre class="r"><code>#WeightMpg = subset(Auto, )</code></pre>
+<pre class="r"><code># Verify sum of residual is zero
+Auto %&gt;%
+  summarise(residual = (LSfit$coefficients[2]* weight + LSfit$coefficients[1])- mpg)%&gt;%
+  sum()</code></pre>
+<pre><code>## [1] 4.24194e-12</code></pre>
 </div>
 <div id="r2" class="section level3">
 <h3><span class="math inline">\(R^2\)</span></h3>
@@ -267,6 +271,15 @@ summary(LSfit)</code></pre>
 <li><span class="math inline">\(R^2 = 1 - RSS/TSS\)</span></li>
 </ul></li>
 </ul>
+<pre class="r"><code>#Method 1 
+cor(Auto$weight,Auto$mpg)^2</code></pre>
+<pre><code>## [1] 0.6926304</code></pre>
+<pre class="r"><code>#Method 2
+RSS = sum(LSfit$residuals^2)
+TSS = sum((Auto$mpg-mean(Auto$mpg))^2)
+
+1-(RSS/TSS)</code></pre>
+<pre><code>## [1] 0.6926304</code></pre>
 </div>
 </div>
 
