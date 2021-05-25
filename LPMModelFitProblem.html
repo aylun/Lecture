@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Yilun" />
+
+<meta name="date" content="2021-05-25" />
+
+<title>LPM Model fit problem</title>
+
+<script src="LPMModelFitProblem_files/header-attrs-2.7/header-attrs.js"></script>
+<script src="LPMModelFitProblem_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="LPMModelFitProblem_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="LPMModelFitProblem_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="LPMModelFitProblem_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="LPMModelFitProblem_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="LPMModelFitProblem_files/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="LPMModelFitProblem_files/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="LPMModelFitProblem_files/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="LPMModelFitProblem_files/navigation-1.1/tabsets.js"></script>
+<link href="LPMModelFitProblem_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="LPMModelFitProblem_files/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-sm-12 col-md-4 col-lg-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-sm-12 col-md-8 col-lg-9">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">LPM Model fit problem</h1>
+<h4 class="author">Yilun</h4>
+<h4 class="date">25 May 2021</h4>
+
+</div>
+
+
+<p>There has been much interest in the question whether the presence of 401(k) pension plans, available to many U.S. workers, increases net savings.</p>
+<p>The data set k401KSUBS contains information on net ﬁnancial assets (<code>nettfa</code>), family income (<code>inc</code>), a binary variable for eligibility in a 401(´k´) plan (´e401k´), and several other variables. In the following, you are asked to run a linear regression that predicts eligibility.</p>
+<pre><code>## Rows: 9,275
+## Columns: 11
+## $ e401k  &lt;int&gt; 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, …
+## $ inc    &lt;dbl&gt; 13.170, 61.230, 12.858, 98.880, 22.614, 15.000, 37.155, 31.896,…
+## $ marr   &lt;int&gt; 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, …
+## $ male   &lt;int&gt; 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, …
+## $ age    &lt;int&gt; 40, 35, 44, 44, 53, 60, 49, 38, 52, 45, 61, 40, 48, 60, 43, 43,…
+## $ fsize  &lt;int&gt; 1, 1, 2, 2, 1, 3, 5, 5, 2, 1, 3, 6, 3, 2, 5, 1, 2, 2, 2, 2, 5, …
+## $ nettfa &lt;dbl&gt; 4.575, 154.000, 0.000, 21.800, 18.450, 0.000, 3.483, -2.100, 5.…
+## $ p401k  &lt;int&gt; 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, …
+## $ pira   &lt;int&gt; 1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, …
+## $ incsq  &lt;dbl&gt; 173.4489, 3749.1128, 165.3282, 9777.2539, 511.3930, 225.0000, 1…
+## $ agesq  &lt;int&gt; 1600, 1225, 1936, 1936, 2809, 3600, 2401, 1444, 2704, 2025, 372…</code></pre>
+<div id="tasks" class="section level2">
+<h2>1 Tasks</h2>
+<div id="fitting-and-interpreting" class="section level3">
+<h3>1.1 Fitting and interpreting</h3>
+<ul>
+<li><p>How many families are eligible and how many are not eligible for participation in a 401(k) plan? Present the absolute numbers and the respective fractions.</p>
+<ul>
+<li>3637 Families are eligible for participation, 39.21% of all families</li>
+</ul></li>
+<li><p>Estimate a linear probability model explaining 401(k) eligibility in terms of income, age, and gender. Include income and age in quadratic form, and report the results in the usual form.</p></li>
+</ul>
+<pre><code>## 
+## Call:
+## lm(formula = e401k ~ inc + incsq + age + agesq + male, data = k401ksubs)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -0.6970 -0.3719 -0.2149  0.4870  0.9155 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -5.063e-01  8.110e-02  -6.243 4.48e-10 ***
+## inc          1.245e-02  5.929e-04  20.993  &lt; 2e-16 ***
+## incsq       -6.165e-05  4.732e-06 -13.028  &lt; 2e-16 ***
+## age          2.651e-02  3.922e-03   6.758 1.49e-11 ***
+## agesq       -3.053e-04  4.501e-05  -6.782 1.26e-11 ***
+## male        -3.533e-03  1.208e-02  -0.292     0.77    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.4648 on 9269 degrees of freedom
+## Multiple R-squared:  0.09428,    Adjusted R-squared:  0.09379 
+## F-statistic:   193 on 5 and 9269 DF,  p-value: &lt; 2.2e-16</code></pre>
+<ul>
+<li>Interpret the coeﬃcients.</li>
+<li>Obtain the ﬁtted values from the linear probability model estimated in part (ii). Are any ﬁtted values negative or greater than one?</li>
+</ul>
+<pre class="r"><code>elig.fitted = fitted.values(lm_elig)
+# Counter: Fitted Values &gt; 1 
+sum(elig.fitted &gt;1)</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code># Counter: Fitted Values negative
+sum(elig.fitted &lt;0)</code></pre>
+<pre><code>## [1] 0</code></pre>
+</div>
+<div id="discussing-model-fit" class="section level3">
+<h3>1.2 Discussing model fit</h3>
+<ul>
+<li>Using the ﬁtted values <span class="math inline">\(\widehat{e401k}_{i}\)</span> from part (iv), deﬁne <span class="math inline">\(\widetilde{e401k}_{i}=1\)</span> if <span class="math inline">\(\widehat{e401k}_{i} \ge 0.5\)</span> and <span class="math inline">\(\widetilde{e401k}_{i}=0\)</span> if <span class="math inline">\(\widehat{e401k}_{i} &lt; 0.5\)</span> . Out of 9,275 families, how many are predicted to be eligible for a 401(k) plan?</li>
+</ul>
+<pre><code>## [1] 2460</code></pre>
+<ul>
+<li>Use the variable <span class="math inline">\(\widetilde{e401k}_{i}\)</span> to compute the overall percent of correctly predicted/classiﬁed observations (families).</li>
+</ul>
+<pre><code>## [1] 0.6507817</code></pre>
+<ul>
+<li>Now compute the percent correctly predicted/classiﬁed for both eligible and non-eligible families. What does this suggest regarding your previously computed measure of model ﬁt?</li>
+</ul>
+<pre><code>## [1] 0.1540701</code></pre>
+<pre><code>## [1] 0.4967116</code></pre>
+<p>the overall percent of correct predictions is the sum of correct eligible and non-eligible predictions</p>
+</div>
+<div id="writing-a-function" class="section level3">
+<h3>1.3 Writing a function</h3>
+<p>Now write a function that accepts a vector thresholds for predicting a family as eligible vs non-eligible. For example, the function accepts <code>c(0.5, 0.6)</code> as an input parameter.</p>
+<p>The function takes the data and the formula as an input. The function performs the following steps:</p>
+<ul>
+<li>It runs the regression (speciﬁed in the formula-argument)</li>
+<li>Then, it uses the threshold and computes the overall percent of correctly classiﬁed observations and also the the percent correctly predicted/classiﬁed for both eligible and non-eligible families.</li>
+</ul>
+<pre class="r"><code># function for classifing, using a vector
+classify.elig.vec = function(value,threshold){
+  Tmin=min(threshold)
+  Tmax=max(threshold)
+  if(Tmax&gt;=value&amp;value&gt;=Tmin ){
+    return(1) 
+  }
+   else {
+    return(0)
+  }
+}
+
+analyse.accuracy = function(data,formula,threshold){
+  #run regression
+  lm_data = lm(formula = formula,data=data)
+  
+  #extract values 
+  fitted_data=fitted.values(lm_elig)
+  model_data=data.frame(Original=data$e401k)
+  ##predict classification and add to data frame
+  model_data$Prediction = sapply(fitted_data,classify.elig.vec,threshold = threshold)
+  ##evaluate prediction
+  model_data$eval = model_data$Original - model_data$Prediction
+  
+  # analyse 
+  Accuracy = list(
+    Overall = nrow(filter(model_data,eval == 0))/nrow(model_data),
+    Eligible = nrow(filter(model_data,Original == 1, eval == 0))/nrow(model_data),
+    NonEligible = nrow(filter(model_data,Original == 0, eval == 0))/nrow(model_data)
+  )
+  #output result
+  return(Accuracy)
+}
+
+#testing
+analyse.accuracy(k401ksubs,&quot;e401k ~ inc + incsq + age + agesq + male&quot;,c(0.5,0.6))</code></pre>
+<pre><code>## $Overall
+## [1] 0.6221024
+## 
+## $Eligible
+## [1] 0.08312668
+## 
+## $NonEligible
+## [1] 0.5389757</code></pre>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3,h4",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

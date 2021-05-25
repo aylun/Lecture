@@ -1,0 +1,141 @@
+---
+title: "LPM Model fit problem"
+author: "Yilun"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: 
+   html_document:
+    #variant: markdown_github
+    toc: true
+    number_sections: false
+    self_contained: no
+    toc_depth: 4
+    toc_float: true
+    fig_caption: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(wooldridge)
+library(dplyr)
+data("k401ksubs")
+```
+
+There has been much interest in the question whether the presence of 401(k) pension plans, available to many U.S. workers, increases net savings.  
+
+The data set k401KSUBS contains information on net ﬁnancial assets (`nettfa`), family income (`inc`), a binary variable for eligibility in a 401(´k´) plan (´e401k´), and several other variables. In the following, you are asked to run a linear regression that predicts eligibility.
+
+```{r}
+glimpse(k401ksubs)
+```
+
+## 1 Tasks 
+### 1.1 Fitting and interpreting
+* How many families are eligible and how many are not eligible for participation in a 401(k) plan? Present the absolute numbers and the respective fractions.
+```{r}
+absElig = sum(k401ksubs$e401k)
+relElig = round(absElig/nrow(k401ksubs)*100,2)
+```
+  
+  + `r absElig` Families are eligible for participation, `r relElig`% of all families
+
+* Estimate a linear probability model explaining 401(k) eligibility in terms of income, age, and gender. Include income and age in quadratic form, and report the results in the usual form.
+
+```{r}
+lm_elig = lm(e401k ~ inc + incsq + age + agesq + male, k401ksubs)
+summary(lm_elig)
+```
+* Interpret the coeﬃcients.
+* Obtain the ﬁtted values from the linear probability model estimated in part (ii). Are any ﬁtted values negative or greater than one?
+```{r echo = TRUE}
+elig.fitted = fitted.values(lm_elig)
+# Counter: Fitted Values > 1 
+sum(elig.fitted >1)
+# Counter: Fitted Values negative
+sum(elig.fitted <0)
+```
+
+### 1.2 Discussing model fit
+* Using the ﬁtted values $\widehat{e401k}_{i}$ from part (iv), deﬁne $\widetilde{e401k}_{i}=1$ if $\widehat{e401k}_{i} \ge 0.5$ and $\widetilde{e401k}_{i}=0$  if $\widehat{e401k}_{i} < 0.5$ . Out of 9,275 families, how many are predicted to be eligible for a 401(k) plan?
+```{r}
+classify.elig.int = function(value,threshold){
+  if(value >= threshold){
+    return(1) 
+  }
+   else {
+    return(0)
+  }
+}
+
+elig.predicted = sapply(elig.fitted,classify.elig.int,threshold = 0.5)
+sum(elig.predicted)
+```
+
+* Use the variable $\widetilde{e401k}_{i}$ to compute the overall percent of correctly predicted/classiﬁed observations (families).
+```{r}
+# Create new Variable storing results
+newData= data.frame(elig=k401ksubs$e401k) #Train Data
+newData$elig.predict=elig.predicted #Test Data
+newData$eval = newData$elig - newData$elig.predict #Result Evaluation
+
+nrow(filter(newData,eval == 0))/nrow(newData)
+
+```
+
+* Now compute the percent correctly predicted/classiﬁed for both eligible and non-eligible families. What does this suggest regarding your previously computed measure of model ﬁt?
+```{r}
+#eligible prediction accuracy
+nrow(filter(newData,elig == 1, eval == 0))/nrow(newData)
+#non-eligible prediction accuracy
+nrow(filter(newData,elig == 0, eval == 0))/nrow(newData)
+```
+the overall percent of correct predictions is the sum of correct eligible and non-eligible predictions
+
+### 1.3 Writing a function
+Now write a function that accepts a vector thresholds for predicting a family as eligible vs non-eligible. For example, the function accepts `c(0.5, 0.6)` as an input parameter.
+
+The function takes the data and the formula as an input. The function performs the following steps:
+
+* It runs the regression (speciﬁed in the formula-argument)
+* Then, it uses the threshold and computes the overall percent of correctly classiﬁed observations and also the the percent correctly predicted/classiﬁed for both eligible and non-eligible families.
+
+```{r echo = TRUE}
+# function for classifing, using a vector
+classify.elig.vec = function(value,threshold){
+  Tmin=min(threshold)
+  Tmax=max(threshold)
+  if(Tmax>=value&value>=Tmin ){
+    return(1) 
+  }
+   else {
+    return(0)
+  }
+}
+
+analyse.accuracy = function(data,formula,threshold){
+  #run regression
+  lm_data = lm(formula = formula,data=data)
+  
+  #extract values 
+  fitted_data=fitted.values(lm_elig)
+  model_data=data.frame(Original=data$e401k)
+  ##predict classification and add to data frame
+  model_data$Prediction = sapply(fitted_data,classify.elig.vec,threshold = threshold)
+  ##evaluate prediction
+  model_data$eval = model_data$Original - model_data$Prediction
+  
+  # analyse 
+  Accuracy = list(
+    Overall = nrow(filter(model_data,eval == 0))/nrow(model_data),
+    Eligible = nrow(filter(model_data,Original == 1, eval == 0))/nrow(model_data),
+    NonEligible = nrow(filter(model_data,Original == 0, eval == 0))/nrow(model_data)
+  )
+  #output result
+  return(Accuracy)
+}
+
+#testing
+analyse.accuracy(k401ksubs,"e401k ~ inc + incsq + age + agesq + male",c(0.5,0.6))
+
+```
+
+
