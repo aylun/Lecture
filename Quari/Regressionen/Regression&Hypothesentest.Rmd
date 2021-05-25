@@ -23,9 +23,9 @@ library(ggplot2)
 
 ## Regression
 
-### 1 Loading and inspectindg Data
+### 1 Loading and inspecting Data
 
-```{r}
+```{r, echo = FALSE}
 data(hprice1)
 glimpse(hprice1)
 ```
@@ -43,7 +43,6 @@ summary(my.lm1)
 ```{r}
 my.price.hat = predict(my.lm1)
 head(my.price.hat)
-
 ```
 
 ### 3 Random data Subsets
@@ -89,7 +88,7 @@ my.data.select = function(my.data, split){
 }
 ```
 
-```{r}
+```{r echo = FALSE}
 # Testing 1
 my.datasets = my.data.select(my.data = hprice1, split=0.8)
 glimpse(my.datasets)
