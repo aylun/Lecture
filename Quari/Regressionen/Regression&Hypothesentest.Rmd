@@ -115,13 +115,21 @@ Write a function that accepts a formula, a dataset and split as an input. It cre
 
 
 ```{r}
+# Write A function that calculates the Residual Sum of Squares
 my.RSS.calculator = function(input.lm, x, y) {
-  sum(((input.lm$coefficients[1]+input.lm$coefficients[2]*x)-y)^2)
+  sum(
+    (
+      (input.lm$coefficients[1]+input.lm$coefficients[2]*x)
+      - y
+    )
+    ^2
+  )
 }
 #Testing
 my.RSS.calculator(input.lm = lm("price~sqrft", data = hprice1),x = hprice1$sqrft,y=hprice1$price)
 
 ```
+
 ```{r}
 my.RSSTrainTest = function(formula,my.data,split){
   # create Datasets
@@ -142,7 +150,6 @@ my.RSSTrainTest = function(formula,my.data,split){
     rssTrain = my.RSS.calculator(input.lm = fn.lm,x = train.dataset$sqrft, y = train.dataset$price),
     rssTest = my.RSS.calculator(input.lm = fn.lm,x = test.dataset$sqrft, y = test.dataset$price)
   )
-
 }
 
 #Testing 
