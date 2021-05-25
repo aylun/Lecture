@@ -1,0 +1,24 @@
+---
+title: "Homework III, due May 27th"
+author: 
+- M Loecher
+- Yilun Liu
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(titanic)
+```
+
+#### This homework is the absolute minimum extra work that you need to invest to keep up with the material in this course.
+
+1. Review your understanding of **linear regression** using the book [An Introduction to Statistical Learning](http://faculty.marshall.usc.edu/gareth-james/ISL/)
+  * Read chapters 3.1, 3.2.1, 3.3.1 
+  * Reproduce Lab Exercises 3.6.4 (Interaction Terms) and 3.6.6 (Qualitative Predictors)
+
+
+2. Load the `titanic` library and the `titanic_train` data. In the following we use `Survived` as the outcome (y):
+   * fit a model containing the interactions between `Sex` and `Pclass`. Interpret the coefficients.
+   * fit a model containing the interactions between `Sex` and `age`. Interpret the coefficients.
+   * fit a model containing the interactions between `Sex`, `Pclass` and `age`. Interpret the coefficients.
