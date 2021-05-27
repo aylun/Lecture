@@ -174,21 +174,99 @@ pre code {
 
 <div id="this-homework-is-the-absolute-minimum-extra-work-that-you-need-to-invest-to-keep-up-with-the-material-in-this-course." class="section level4">
 <h4>This homework is the absolute minimum extra work that you need to invest to keep up with the material in this course.</h4>
-<ol style="list-style-type: decimal">
-<li>Review your understanding of <strong>linear regression</strong> using the book <a href="http://faculty.marshall.usc.edu/gareth-james/ISL/">An Introduction to Statistical Learning</a></li>
-</ol>
+</div>
+<div id="review-your-understanding-of-linear-regression-using-the-book-an-introduction-to-statistical-learning" class="section level4">
+<h4>1. Review your understanding of <strong>linear regression</strong> using the book <a href="http://faculty.marshall.usc.edu/gareth-james/ISL/">An Introduction to Statistical Learning</a></h4>
 <ul>
 <li>Read chapters 3.1, 3.2.1, 3.3.1</li>
 <li>Reproduce Lab Exercises 3.6.4 (Interaction Terms) and 3.6.6 (Qualitative Predictors)</li>
 </ul>
-<ol start="2" style="list-style-type: decimal">
-<li>Load the <code>titanic</code> library and the <code>titanic_train</code> data. In the following we use <code>Survived</code> as the outcome (y):
+</div>
+<div id="excercise" class="section level4">
+<h4>2. Excercise</h4>
+<p>Load the <code>titanic</code> library and the <code>titanic_train</code> data. In the following we use <code>Survived</code> as the outcome (y):</p>
+<div id="fit-a-model-containing-the-interactions-between-sex-and-pclass.-interpret-the-coefficients." class="section level5">
+<h5>Fit a model containing the interactions between <code>Sex</code> and <code>Pclass</code>. Interpret the coefficients.</h5>
+<pre><code>## 
+## Call:
+## lm(formula = &quot;Survived~Pclass*Sex&quot;, data = titanic_train)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1.0248 -0.2303 -0.1241  0.2191  0.8759 
+## 
+## Coefficients:
+##                Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)     1.26863    0.05875  21.595  &lt; 2e-16 ***
+## Pclass         -0.24388    0.02529  -9.642  &lt; 2e-16 ***
+## Sexmale        -0.82582    0.07688 -10.741  &lt; 2e-16 ***
+## Pclass:Sexmale  0.13764    0.03203   4.298 1.92e-05 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.3836 on 887 degrees of freedom
+## Multiple R-squared:  0.3806, Adjusted R-squared:  0.3785 
+## F-statistic: 181.7 on 3 and 887 DF,  p-value: &lt; 2.2e-16</code></pre>
+<div id="interpretation" class="section level6">
+<h6>Interpretation:</h6>
 <ul>
-<li>fit a model containing the interactions between <code>Sex</code> and <code>Pclass</code>. Interpret the coefficients.</li>
-<li>fit a model containing the interactions between <code>Sex</code> and <code>age</code>. Interpret the coefficients.</li>
-<li>fit a model containing the interactions between <code>Sex</code>, <code>Pclass</code> and <code>age</code>. Interpret the coefficients.</li>
-</ul></li>
-</ol>
+<li>The P values for all Coefficients are very small, which indicates a relationship between the choosen predictor (<code>Pclass</code> <code>Sex</code>) and the response <code>Survived</code><br />
+</li>
+<li>Any predictions on wether the passenger survived is going to deviate by 0.38 units (on average). The <em>lack of fit</em> of the model is 0.38</li>
+<li>Overall, the model has an R-squared from 0.3806. This tells us that 38.06% of the variability in whether the person survived can be explained by their class and sex</li>
+</ul>
+<hr />
+</div>
+</div>
+<div id="fit-a-model-containing-the-interactions-between-sex-and-age.-interpret-the-coefficients." class="section level5">
+<h5>Fit a model containing the interactions between <code>Sex</code> and <code>age</code>. Interpret the coefficients.</h5>
+<pre><code>## 
+## Call:
+## lm(formula = &quot;Survived~Age*Sex&quot;, data = titanic_train)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -0.8579 -0.2275 -0.1616  0.2555  0.9571 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  0.655775   0.056616  11.583  &lt; 2e-16 ***
+## Age          0.003547   0.001811   1.959  0.05053 .  
+## Sexmale     -0.349223   0.072288  -4.831 1.67e-06 ***
+## Age:Sexmale -0.006842   0.002241  -3.053  0.00235 ** 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.412 on 710 degrees of freedom
+##   (177 observations deleted due to missingness)
+## Multiple R-squared:  0.3003, Adjusted R-squared:  0.2973 
+## F-statistic: 101.6 on 3 and 710 DF,  p-value: &lt; 2.2e-16</code></pre>
+<hr />
+</div>
+<div id="fit-a-model-containing-the-interactions-between-sex-pclass-and-age.-interpret-the-coefficients." class="section level5">
+<h5>Fit a model containing the interactions between <code>Sex</code>, <code>Pclass</code> and <code>age</code>. Interpret the coefficients.</h5>
+<pre><code>## 
+## Call:
+## lm(formula = &quot;Survived~Pclass+Sex+Age&quot;, data = titanic_train)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -1.11224 -0.25417 -0.06352  0.22700  1.00737 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  1.326066   0.062606  21.181  &lt; 2e-16 ***
+## Pclass      -0.202916   0.018891 -10.741  &lt; 2e-16 ***
+## Sexmale     -0.479293   0.030671 -15.627  &lt; 2e-16 ***
+## Age         -0.005453   0.001082  -5.042 5.86e-07 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.3846 on 710 degrees of freedom
+##   (177 observations deleted due to missingness)
+## Multiple R-squared:  0.3902, Adjusted R-squared:  0.3876 
+## F-statistic: 151.4 on 3 and 710 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
 </div>
 
 
