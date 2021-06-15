@@ -1,0 +1,95 @@
+---
+title: "Probset7"
+author: "Yilun"
+date: "6/1/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(wooldridge)
+```
+
+## C4 GPA Dataset
+```{r}
+data(gpa2)
+gpa2$male = as.factor(1-gpa2$female)
+gpa2$athlete = as.factor(gpa2$athlete)
+gpa2$female = as.factor(gpa2$female)
+```
+#### colgpa is cumulative college grade point average, hsize is size of high school graduating class, in hundreds, hsperc is academic percentile in graduating class, sat is combined SAT score, female is a binary gender variable, and athlete is a binary variable which is equal to one for student-athletes. What are your expectations for the coeﬃcients in this equation? Which ones are you unsure about?
+I would estimate, that the effects of hsize, hsize-squared and hsperc would be negative, while SAT, female and being an athlete have a positive effect on the predictions.
+
+#### Estimate the equation in part (i) and report the results in the usual form. What is the estimated GPA diﬀerential between athletes and nonathletes? What about statistical signiﬁcance?
+
+```{r}
+formula = "colgpa ~ hsize + hsizesq + hsperc + sat+ female + athlete"
+lm.fit = lm(formula = formula, data = gpa2)
+summary(lm.fit)
+```
+The statistical difference between athletes and non athletes are around `r round(coef(lm.fit)[7],2)` this effect seems to be statistical significant with a significant level between 0 and 0.001
+
+#### Drop sat from the model and reestimate the equation. Now, what is the estimated eﬀect of being an athlete? Discuss why this estimate is diﬀerent from the that obtained in part(ii).
+```{r}
+formula = "colgpa ~ hsize + hsizesq + hsperc + female + athlete"
+lm.fit = lm(formula = formula, data = gpa2)
+summary(lm.fit)
+```
+By dropping SAT,  the estimated effect of being an athlete has dropped and it seems to be insignificant whether the person is an athlete. This is indicates that athletes and SAT are correlated (`r cor(gpa2$sat,as.numeric(gpa2$athlete))`). Since both of them have positive coefficients in the model, while correlating negatively, an underestimation is expected by leaving out SAT. 
+
+#### In the model from part (i), allow the eﬀect of being an athlete to diﬀer by gender and test the null hypothesis that there is no ceteris paribus diﬀerence between female athletes and female nonathletes.
+```{r}
+formula = "colgpa ~ hsize + hsizesq + hsperc + sat+ male * athlete"
+lm.fit = lm(formula = formula, data = gpa2)
+summary(lm.fit)
+```
+Based on this new model, female non athletes represent the baseline. However, the effects of being an athlete has a significant level between 0.01 and 0.05 and seems to be rather insignificant.
+
+#### Does the eﬀect of sat on colgpa diﬀer by gender? Justify your answer.
+```{r}
+formula = "colgpa ~ hsize+hsizesq+hsperc+ female*sat"
+lm.fit = lm(formula = formula, data = gpa2)
+summary(lm.fit)
+```
+The effects of SAT on college GPA does not differ by gender. The effect of being female and the interaction term between SAT and female seems to be insignificant
+
+## C3 MLB Dataset
+
+```{r}
+data("mlb1")
+
+mlb1$frstbase=as.factor(mlb1$frstbase)
+mlb1$scndbase=as.factor(mlb1$scndbase)
+mlb1$thrdbase=as.factor(mlb1$thrdbase)
+mlb1$shrtstop=as.factor(mlb1$shrtstop)
+mlb1$catcher=as.factor(mlb1$catcher)
+mlb1$outfield=as.factor(mlb1$outfield)
+
+```
+
+#### State the null hypothesis that, controlling for other factors, catchers and outﬁelders earn, on average, the same amount. Test this hypothesis using the data in MLB1.dta and comment on the size of the estimated salary diﬀerential.
+$$ H_{0}: \beta _{13} = 0 $$
+
+The p-value of having an effect on the salary by being a catcher is rather insignificant. Therefore, the null hypothesis holds. However, on occurence, the effect of being a catcher could raise the factor of the salary by 0.25 
+```{r}
+mlb.fit1 = lm("lsalary ~ years + gamesyr + bavg + hrunsyr + rbisyr + runsyr + fldperc + allstar + frstbase + scndbase + thrdbase + shrtstop + catcher", data = mlb1)
+RSS = sum(mlb.fit1$residuals^2)
+summary(mlb.fit1)
+```
+
+#### State and test the null hypothesis that there is no diﬀerence in average salary across positions, once other factors have been controlled for.
+$$ H_{0}: \beta _{9} = \beta _{10}  =\beta _{11} = \beta _{12} = \beta _{13} =  0 $$
+```{r}
+mlb.fit2 = lm("lsalary ~ years + gamesyr + bavg + hrunsyr + rbisyr + runsyr + fldperc + allstar ", data = mlb1)
+
+RSS0 = sum(mlb.fit2$residuals^2)
+FStat = 
+  ((RSS0-RSS)/5)/
+    (RSS/(353-12))
+#P value
+pfVal = 1-pf(FStat,5,339)
+```
+The F-statistic for the null hypothesis on n = 353 observations is `r FStat` with a probability of `r pfVal`. This indicates, that the null hypothesis holds.
+
+#### Are the results from parts (i) and (ii) consistent? If not, explain what is happening.
+Yes the results from both parts are consistent.
