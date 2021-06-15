@@ -1,0 +1,67 @@
+---
+title: "Loecher Excersie"
+author: "Yilun"
+date: "6/3/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(titanic)
+fit = glm(Survived ~ Pclass + Fare + Sex + Age, data = titanic_train, family = "binomial")
+summary(fit)
+preds = predict(fit, titanic_train, type = "response")
+hist(preds)
+#accuracy 
+predSurv = preds > .5
+mean(predSurv == titanic_train$Survived, na.rm = TRUE) #<- accuracy
+confMat = table(predSurv,titanic_train$Survived )
+# Specificity indicator for False Positive
+357/(357+81)
+specificity = 1- confMat[1,2]/sum(confMat[1,])#1- FP/N
+# Sensitivity indicator for True Positive
+209/(67+209)
+sensitivity = confMat[2,2]/sum(confMat[2,])#TP/P
+
+```
+#Breakout Room problems
+1. Vary the threshold continuously from 0 to 1 and compute/plot the accuray (Reproduce the solid black line in FIGURE 4.7 from the ISLR book)
+
+```{r}
+x = seq(0,1, by = 0.01)
+threshhold.accuracy = matrix(nrow = length(x), ncol = 1)
+for (i in 1:length(x)) {
+  threshhold.accuracy[i,1]= mean((preds > x[i]) == titanic_train$Survived, na.rm = TRUE)
+}
+threshhold.accuracy = cbind(threshhold.accuracy, x)
+colnames(threshhold.accuracy) = c("accuracy","threshhold")
+
+threshhold.accuracy=as.data.frame(threshhold.accuracy)
+plot(threshhold.accuracy$accuracy~threshhold.accuracy$threshhold, type = "l");grid()
+
+```
+
+2.    a) modify the random data generation for the F test such that: the Y column takes on random digits 0/1 with 1% prob 
+      b) fit a logistic regression and compute the accuracy
+```{r}
+set.seed(321)
+Nrows=1000;Ncols=10
+
+ranData = matrix(rnorm(Nrows*Ncols),ncol=Ncols)
+colnames(ranData) = c("Y", paste0("X",1:(Ncols-1)))
+ranData = as.data.frame(ranData)
+ranData$Y = rbinom(Nrows,1,0.01)
+
+#build a model with ALL x variables
+fitRan = glm(Y ~ . , data = ranData,family = "binomial" )
+summary(fitRan)
+
+preds = predict(fitRan, ranData, type = "response")
+
+confMat = table((preds > 0.05), fitRan$y)
+```
+
+
