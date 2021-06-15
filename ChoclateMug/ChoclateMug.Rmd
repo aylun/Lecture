@@ -1,0 +1,39 @@
+---
+title: "ChoclateMug"
+author: "Yilun"
+date: "6/8/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+library(readr)
+ChoclateMug <- read_csv("ChoclateMug/individual-data.csv")
+```
+## Linear Probability
+```{r}
+ChoclateMug$Treatment = as.factor(ChoclateMug$Treatment)
+CM.lm = lm(formula = choosecandy ~Treatment, data = ChoclateMug)
+summary(CM.lm)
+
+```
+## Logit
+```{r}
+CM.glm = glm(formula = choosecandy ~Treatment, family = binomial, data = ChoclateMug)
+summary(CM.glm)
+```
+
+### replicating lm coefficients
+```{r}
+#for intercept
+plogis(coef(CM.glm)[1])
+#for candy
+plogis(coef(CM.glm)[1]+coef(CM.glm)[2])
+#for neither
+plogis(coef(CM.glm)[1]+coef(CM.glm)[4])
+## neither difference
+plogis(coef(CM.glm)[1]+coef(CM.glm)[4])-plogis(coef(CM.glm)[1])
+```
+

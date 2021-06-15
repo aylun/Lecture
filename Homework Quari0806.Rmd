@@ -1,0 +1,65 @@
+---
+title: "MFX function"
+author: "Yilun"
+date: "6/8/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(mfx)
+```
+## Creating Data
+x is a continous data
+```{r}
+set.seed(12345)
+n = 1000
+x = rnorm(n) 
+y = ifelse(pnorm(1 + 0.5 * x + rnorm(n)) > 0.5, 1, 0)
+my.data = data.frame(y, x)
+```
+## running a probit model
+```{r}
+
+my.mod1 = probitmfx(formula = y ~ x, data = my.data)
+my.mod1$mfxest
+```
+
+## Tasks
+ * It is ok to assume there is only one variable called x 
+ * The functions accepts a formula and a dataset 
+ * There is a boolean variable atmean, with default TRUE. If TRUE the function calculates the partial effect at the average (inserting ¯x) 
+ * If atmean=FALSE the function calculates the average of the partial effects
+```{r}
+my.mfx = function(formula, data, atmean = TRUE){
+  #estimate Model
+  my.glm=glm(formula = formula,family = binomial(link = "probit"),data = data)
+  beta = unname(my.glm$coefficients[1])
+  beta.x =unname(my.glm$coefficients[2])
+  if(atmean){
+    #calculate PEA
+    x.mean = mean(my.glm$model$x) 
+    result = c(dnorm(beta+x.mean*beta.x)*beta.x)
+  } else {
+    #calculate APE
+    result = c(
+      mean(
+        dnorm(beta+my.glm$model$x*beta.x)*beta.x
+      )
+    )
+  }
+  #add name
+  names(result)= c("Marginal Effect")
+  return(result)
+}
+
+# Test
+## PEA
+my.mfx(formula = y ~ x, data=my.data)
+probitmfx(formula = y ~ x, data = my.data)
+## APE
+my.mfx(formula = y ~ x, data=my.data, atmean = FALSE)
+probitmfx(formula = y ~ x, data = my.data, atmean=FALSE)
+```
+ 
+ 
